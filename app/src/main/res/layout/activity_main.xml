@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,12 +7,59 @@
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/breed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="@string/choose_breed"
+        android:gravity="center"
+        style="@style/searchText"/>
 
-</android.support.constraint.ConstraintLayout>
+    <Spinner
+        android:id="@+id/spinnerBreed"
+        style="@style/searchText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/breed"
+        android:backgroundTint="@color/colorPrimary"
+        android:dropDownWidth="wrap_content"
+        android:entries="@array/spinner_breed"
+        android:spinnerMode="dropdown" />
+
+    <TextView
+        android:id="@+id/subBreed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/choose_sub_breed"
+        android:gravity="center"
+        android:layout_below="@id/spinnerBreed"
+        style="@style/searchText"/>
+
+    <Spinner
+        android:id="@+id/spinnerSubBreed"
+        style="@style/searchText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/subBreed"
+        android:backgroundTint="@color/colorPrimary"
+        android:dropDownWidth="wrap_content"
+        android:entries="@array/spinner_sub_breed"
+        android:spinnerMode="dropdown" />
+
+    <TextView
+        android:id="@+id/Look"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/look"
+        android:gravity="center"
+        android:layout_below="@id/spinnerSubBreed"
+        style="@style/searchText"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/Look"
+        android:scrollbars="vertical"
+        />
+
+</RelativeLayout>

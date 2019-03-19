@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">DogSearch</string>
+    <string name="choose_breed">Choose Breed</string>
+    <string name="choose_sub_breed">Choose Sub-Breed</string>
+    <string name="look">Look</string>
+
+    <array name="spinner_breed">
+        <item>show all</item>
+    </array>
+
+    <array name="spinner_sub_breed">
+        <item>show all</item>
+    </array>
+
 </resources>
