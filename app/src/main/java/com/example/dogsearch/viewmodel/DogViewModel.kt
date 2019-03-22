@@ -51,4 +51,18 @@ class DogViewModel (): BaseViewModel<DogState>() {
                 ).addTo(disposable)
     }
 
+    fun getSubDogRansom(input: String) {
+        dogRepository.getSearchDogObservable(input)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        {
+                            statePublisher.onNext(DogState.SearchDogRecieved(it.message))
+                        },
+                        {
+                            statePublisher.onNext(DogState.Error(it))
+                        }
+                ).addTo(disposable)
+    }
+
 }

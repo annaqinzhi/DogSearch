@@ -56,4 +56,18 @@ object DogRepository {
 
     }
 
+    fun getSubDogRandomObservable(totBreed: String): Observable<ResponseRandom> {
+
+        val retrofit = Retrofit.Builder()
+                .baseUrl(base_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build()
+
+        val dogApi = retrofit.create(DogApi::class.java)
+
+        return dogApi.getSubBreedDogRansomObservable(totBreed)
+
+    }
+
 }

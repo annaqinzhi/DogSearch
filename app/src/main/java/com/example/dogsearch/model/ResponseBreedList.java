@@ -2,6 +2,8 @@ package com.example.dogsearch.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.json.JSONObject;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -9,9 +11,9 @@ public class ResponseBreedList implements Serializable {
         @SerializedName("status")
         private String status;
         @SerializedName("message")
-        private List<Breed> message;
+        private Object message;
 
-    public ResponseBreedList(String status, List<Breed> message) {
+    public ResponseBreedList(String status, Object message) {
         this.status = status;
         this.message = message;
     }
@@ -24,11 +26,11 @@ public class ResponseBreedList implements Serializable {
         this.status = status;
     }
 
-    public List<Breed> getMessage() {
+    public Object getMessage() {
         return message;
     }
 
-    public void setMessage(List<Breed> message) {
+    public void setMessage(Object message) {
         this.message = message;
     }
 }

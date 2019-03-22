@@ -21,4 +21,8 @@ public interface DogApi {
     Observable<ResponseBreed> getSearchDogObservable(
             @Path("breed") String breed);
 
+    @GET("breed/{totBreed}//images/random")
+    Observable<ResponseRandom> getSubBreedDogRansomObservable(
+            @Path("totBreed") String totBreed);
+
 }
