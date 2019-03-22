@@ -6,12 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.dogsearch.model.Dog;
+
 import java.util.ArrayList;
 import java.util.List;
-
-/**
- * Visit website http://www.whats-online.info
- * **/
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
@@ -19,14 +17,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     // Database Name
-    private static final String DATABASE_NAME = "contactsManager";
+    private static final String DATABASE_NAME = "DogsManager";
 
     // Contacts table name
-    private static final String TABLE_CONTACTS = "contacts";
+    private static final String TABLE_DOGS = "Dogs";
 
     // Contacts Table Columns names
     private static final String KEY_ID = "id";
-    private static final String KEY_FNAME = "fname";
+    private static final String KEY_BREED = "breed";
+    private static final String KEY_SUBBREED = "sub_breed";
     private static final String KEY_POTO = "poto";
 
 
@@ -37,11 +36,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //Create tables
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_TABLE_CONTACTS="CREATE TABLE " + TABLE_CONTACTS + "("
+        String CREATE_TABLE_DOGS="CREATE TABLE " + TABLE_DOGS + "("
                 + KEY_ID +" INTEGER PRIMARY KEY,"
-                + KEY_FNAME +" TEXT,"
+                + KEY_BREED +" TEXT,"
+                + KEY_SUBBREED +" TEXT,"
                 + KEY_POTO  +" BLOB" + ")";
-        db.execSQL(CREATE_TABLE_CONTACTS);
+        db.execSQL(CREATE_TABLE_DOGS);
     }
 
     // Upgrading database
@@ -49,7 +49,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
         // Drop older table if existed
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_DOGS);
 
         // Create tables again
         onCreate(db);
@@ -59,28 +59,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * All CRUD(Create, Read, Update, Delete) Operations
      */
 
-    //Insert values to the table contacts
-    public void addContacts(Contact contact){
+    //Insert values to the table
+    public void addDogs(Dog dog){
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues values=new ContentValues();
 
-        values.put(KEY_FNAME, contact.getFName());
-        values.put(KEY_POTO, contact.getImage() );
+        values.put(KEY_BREED, dog.getBreed());
+        values.put(KEY_SUBBREED, dog.getSubBreed());
+        values.put(KEY_POTO, dog.getImg() );
 
-
-        db.insert(TABLE_CONTACTS, null, values);
+        db.insert(TABLE_DOGS, null, values);
         db.close();
     }
 
 
     /**
-     *Getting All Contacts
+     *Getting All Dogs
      **/
 
-    public List<Contact> getAllContacts() {
-        List<Contact> contactList = new ArrayList<Contact>();
+    public List<Dog> getAllDogs() {
+        List<Dog> dogList = new ArrayList<Dog>();
         // Select All Query
-        String selectQuery = "SELECT  * FROM " + TABLE_CONTACTS;
+        String selectQuery = "SELECT  * FROM " + TABLE_DOGS;
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -88,46 +88,47 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                Contact contact = new Contact();
-                contact.setID(Integer.parseInt(cursor.getString(0)));
-                contact.setFName(cursor.getString(1));
-                contact.setImage(cursor.getBlob(2));
+                Dog dog = new Dog();
+                dog.setId(Integer.parseInt(cursor.getString(0)));
+                dog.setBreed(cursor.getString(1));
+                dog.setSubBreed(cursor.getString(2));
+                dog.setImg(cursor.getBlob(3));
 
 
-                // Adding contact to list
-                contactList.add(contact);
+                // Adding dog to list
+                dogList.add(dog);
             } while (cursor.moveToNext());
         }
 
-        // return contact list
-        return contactList;
+        // return dog list
+        return dogList;
     }
 
 
     /**
-     *Updating single contact
+     *Updating single dog
      **/
 
-    public int updateContact(Contact contact, int id) {
+    public int updateDog(Dog dog, int id) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_FNAME, contact.getFName());
-        values.put(KEY_POTO, contact.getImage());
+        values.put(KEY_BREED, dog.getBreed());
+        values.put(KEY_POTO, dog.getImg());
 
 
         // updating row
-        return db.update(TABLE_CONTACTS, values, KEY_ID + " = ?",
+        return db.update(TABLE_DOGS, values, KEY_ID + " = ?",
                 new String[] { String.valueOf(id) });
     }
 
     /**
-     *Deleting single contact
+     *Deleting single dog
      **/
 
-    public void deleteContact(int Id) {
+    public void deleteDog(int Id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_CONTACTS, KEY_ID + " = ?",
+        db.delete(TABLE_DOGS, KEY_ID + " = ?",
                 new String[] { String.valueOf(Id) });
         db.close();
     }
