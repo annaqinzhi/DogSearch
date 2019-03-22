@@ -22,9 +22,10 @@ public class Dog {
     }
 
     // constructor
-    public Dog(String breed, byte[] img){
+    public Dog(String breed, String subBreed, byte[] img){
 
         this.breed = breed;
+        this.subBreed = subBreed;
         this.img = img;
 
     }

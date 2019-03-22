@@ -24,6 +24,10 @@ import org.json.JSONObject
 import org.json.JSONArray
 import java.io.ByteArrayOutputStream
 import android.widget.AdapterView
+import com.example.dogsearch.model.Dog
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
 
 
 class MainActivity : BaseActivity<DogViewModel>(DogViewModel::class.java), View.OnClickListener,
@@ -40,6 +44,7 @@ class MainActivity : BaseActivity<DogViewModel>(DogViewModel::class.java), View.
     private var breednSubBreed = ""
     private var breedSeleted= ""
     private var subBreedSeleted = ""
+    private var imageByteArray : ByteArray ? = null
     final val defaultString = "show all"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,11 +88,13 @@ class MainActivity : BaseActivity<DogViewModel>(DogViewModel::class.java), View.
                                 }
                                 is DogState.SubDogRansomRecieved -> {
                                     showDogImage(state.image)
+                                    imageByteArray = null
+                                    imageByteArray = profileImage(convertImagetoBp(state.image)!!)
                                 }
                             }
                         },
                         {
-                            if (BuildConfig.DEBUG) Toast.makeText(this, "Error", Toast.LENGTH_LONG).show()
+                            if (BuildConfig.DEBUG) Toast.makeText(this, "", Toast.LENGTH_LONG).show()
                         }
                 )
                 .addTo(disposable)
@@ -189,6 +196,7 @@ class MainActivity : BaseActivity<DogViewModel>(DogViewModel::class.java), View.
                     breednSubBreed = breedSeleted + "-"+ subBreedSeleted
                     getStateListener()
                     viewModel.getSubDogRansom(breednSubBreed)
+                    addDog(breedSeleted,subBreedSeleted,imageByteArray)
                 } else {
                     getStateListener()
                     viewModel.getRandomDog()
@@ -249,43 +257,41 @@ class MainActivity : BaseActivity<DogViewModel>(DogViewModel::class.java), View.
         return null
     }
 
+    //Convert imageUrl to bitmap
+    private fun convertImagetoBp(b: String): Bitmap? {
+            try {
+                var url = URL(b);
+                var connection = url.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                var input = connection.getInputStream();
+                var myBitmap = BitmapFactory.decodeStream(input);
+                return myBitmap;
+            } catch (e : IOException) {
+                e.printStackTrace();
+                return null;
+            }
+    }
+
     //Convert bitmap to bytes
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
     private fun profileImage(b: Bitmap): ByteArray {
 
         val bos = ByteArrayOutputStream()
-        b.compress(Bitmap.CompressFormat.PNG, 0, bos)
+        b.compress(Bitmap.CompressFormat.JPEG, 50, bos)
         return bos.toByteArray()
 
     }
 
+    //Insert data to the database
+    private fun addDog(breed: String, subBreed:String, image:ByteArray?) {
+        db!!.addDogs(Dog(breed, subBreed,image))
+        Toast.makeText(applicationContext, "Saved successfully", Toast.LENGTH_LONG).show()
+    }
 
-//    // function to get values from the Edittext and image
-//    private fun getValues() {
-//        f_name = fname.getText().toString()
-//        photo = profileImage(bp)
-//    }
-//
-//    //Insert data to the database
-//    private fun addContact() {
-//        getValues()
-//
-//        db.addContacts(Contact(f_name, photo))
-//        Toast.makeText(applicationContext, "Saved successfully", Toast.LENGTH_LONG).show()
-//    }
-//
-//    //Retrieve data from the database and set to the list view
-//    private fun ShowRecords() {
-//        val contacts = ArrayList(db.getAllContacts())
-//        data = DataAdapter(this, contacts)
-//
-//        lv.setAdapter(data)
-//
-//        lv.setOnItemClickListener(AdapterView.OnItemClickListener { parent, view, position, id ->
-//            dataModel = contacts.get(position)
-//
-//            Toast.makeText(applicationContext, String.valueOf(dataModel.getID()), Toast.LENGTH_SHORT).show()
-//        })
-//    }
+    //Retrieve data from the database and set to the list view
+    private fun RetrieveRecords() {
+        val dogs = ArrayList(db!!.getAllDogs())
+    }
 
 }
