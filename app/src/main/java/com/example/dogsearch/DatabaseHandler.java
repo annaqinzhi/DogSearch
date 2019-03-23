@@ -1,15 +1,27 @@
 package com.example.dogsearch;
 
+import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.example.dogsearch.model.Dog;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
@@ -61,7 +73,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     //Insert values to the table
     public void addDogs(Dog dog){
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values=new ContentValues();
 
         values.put(KEY_BREED, dog.getBreed());
@@ -72,38 +84,34 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-
-    /**
-     *Getting All Dogs
-     **/
-
+    //Retrieve data from the database
     public List<Dog> getAllDogs() {
         List<Dog> dogList = new ArrayList<Dog>();
-        // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_DOGS;
 
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
-
-        // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
                 Dog dog = new Dog();
-                dog.setId(Integer.parseInt(cursor.getString(0)));
                 dog.setBreed(cursor.getString(1));
                 dog.setSubBreed(cursor.getString(2));
                 dog.setImg(cursor.getBlob(3));
-
-
-                // Adding dog to list
                 dogList.add(dog);
             } while (cursor.moveToNext());
         }
-
-        // return dog list
         return dogList;
     }
 
+    public Dog getOneDog(String breed, String subBreed){
+        String selectQuery = "SELECT  * FROM " + TABLE_DOGS;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        Dog dog = new Dog();
+
+        return dog;
+    }
 
     /**
      *Updating single dog

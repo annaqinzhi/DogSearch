@@ -3,39 +3,21 @@ package com.example.dogsearch.model;
 public class Dog {
 
     //private variables
-    int id;
     String breed;
     String subBreed;
     byte[] img;
+    String imgLink;
 
     // Empty constructor
     public Dog(){
 
     }
 
-    // constructor
-    public Dog(int id, String breed, String subBreed, byte[] img) {
-        this.id = id;
+    public Dog(String breed, String subBreed, byte[] img, String imgLink) {
         this.breed = breed;
         this.subBreed = subBreed;
         this.img = img;
-    }
-
-    // constructor
-    public Dog(String breed, String subBreed, byte[] img){
-
-        this.breed = breed;
-        this.subBreed = subBreed;
-        this.img = img;
-
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+        this.imgLink = imgLink;
     }
 
     public String getBreed() {
@@ -60,6 +42,14 @@ public class Dog {
 
     public void setImg(byte[] img) {
         this.img = img;
+    }
+
+    public String getImgLink() {
+        return imgLink;
+    }
+
+    public void setImgLink(String imgLink) {
+        this.imgLink = imgLink;
     }
 }
 

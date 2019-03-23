@@ -16,14 +16,12 @@
 
     <Spinner
         android:id="@+id/spinnerBreed"
-        style="@style/searchText"
+        style="@style/spinner_style"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/breed"
-        android:backgroundTint="@color/colorPrimary"
-        android:dropDownWidth="wrap_content"
         android:entries="@array/spinner_breed"
-        android:spinnerMode="dropdown" />
+        />
 
     <TextView
         android:id="@+id/subBreed"
@@ -36,31 +34,38 @@
 
     <Spinner
         android:id="@+id/spinnerSubBreed"
-        style="@style/searchText"
+        style="@style/spinner_style"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/subBreed"
-        android:backgroundTint="@color/colorPrimary"
-        android:dropDownWidth="wrap_content"
-        android:entries="@array/spinner_sub_breed"
-        android:spinnerMode="dropdown" />
+        android:entries="@array/spinner_sub_breed"/>
 
-    <TextView
-        android:id="@+id/Look"
-        style="@style/searchText"
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvLook"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/spinnerSubBreed"
         android:layout_margin="8dp"
-        android:gravity="center"
-        android:background="@drawable/gradient_background_color"
-        android:text="@string/look" />
+        android:layout_below="@id/spinnerSubBreed"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="10dp">
+
+        <TextView
+            android:id="@+id/Look"
+            style="@style/searchText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:background="@drawable/gradient_background_color"
+            android:text="@string/look" />
+
+    </androidx.cardview.widget.CardView>
 
     <GridView
         android:id="@+id/gridview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/Look"
+        android:layout_below="@+id/cvLook"
         />
 
 

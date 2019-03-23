@@ -2,9 +2,10 @@ package com.example.dogsearch.view
 
 
 import android.annotation.TargetApi
+import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Build
 import android.os.Bundle
 
@@ -25,9 +26,7 @@ import org.json.JSONArray
 import java.io.ByteArrayOutputStream
 import android.widget.AdapterView
 import com.example.dogsearch.model.Dog
-import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
+import java.util.*
 
 
 class MainActivity : BaseActivity<DogViewModel>(DogViewModel::class.java), View.OnClickListener,
@@ -36,16 +35,17 @@ class MainActivity : BaseActivity<DogViewModel>(DogViewModel::class.java), View.
     private var gridView: GridView? = null
     private var spinnerBreed: Spinner? = null
     private var spinnerSubBreed: Spinner? = null
-    private var dogAdapterGridView: DogAdapterGridView? = null
+    private var dogAdapterGridView: DogAdapterGridView_Dog? = null
     private var look: TextView? = null
     private var breedList = mutableListOf<Breed>()
     private var breedHashmap = HashMap<String, List<String>>()
     private var db: DatabaseHandler? = null
-    private var breednSubBreed = ""
-    private var breedSeleted= ""
-    private var subBreedSeleted = ""
-    private var imageByteArray : ByteArray ? = null
     final val defaultString = "show all"
+    private var breednSubBreed = ""
+    private var breedSeleted= defaultString
+    private var subBreedSeleted = defaultString
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,12 +61,15 @@ class MainActivity : BaseActivity<DogViewModel>(DogViewModel::class.java), View.
         spinnerSubBreed!!.setOnItemSelectedListener(this)
         look!!.setOnClickListener(this)
 
-        getStateListener()
-        viewModel.getRandomDog()
-
-        getStateListener()
-        viewModel.getBreedListAll()
-
+        if(isNetworkAvailable()) {
+            getStateListener()
+            viewModel.downLoadImage()
+            viewModel.getBreedListAll()
+            viewModel.getRandomDog()
+        } else {
+            showDogImage(db!!.allDogs.get(48))
+            Toast.makeText(this, db!!.allDogs.get(48).breed, Toast.LENGTH_LONG).show()
+        }
     }
 
     fun getStateListener() {
@@ -77,24 +80,33 @@ class MainActivity : BaseActivity<DogViewModel>(DogViewModel::class.java), View.
                         { state ->
                             when (state) {
                                 is DogState.RandomDogRecieved -> {
-                                    showDogImage(state.image)
+                                    var dog = Dog(breedSeleted,subBreedSeleted,null, state.image)
+                                    showDogImage(dog)
                                 }
                                 is DogState.SearchDogRecieved -> {
-                                    showDogImageList(state.images)
+                                    var dogs = mutableListOf<Dog>()
+                                    for (i in state.images){
+                                        var dog = Dog(breedSeleted,subBreedSeleted,null,i)
+                                        dogs.add(dog)
+                                    }
+                                    showDogImageList(dogs)
                                 }
                                 is DogState.BreedListAllRecieved -> {
                                     var obj = state.breedObj
                                     setUpBreedList(getBreedObjList(obj))
                                 }
                                 is DogState.SubDogRansomRecieved -> {
-                                    showDogImage(state.image)
-                                    imageByteArray = null
-                                    imageByteArray = profileImage(convertImagetoBp(state.image)!!)
+                                    var dog = Dog(breedSeleted,subBreedSeleted,null, state.image)
+                                    showDogImage(dog)
+                                }
+                                is DogState.DownLoadImage -> {
+                                    var dog = Dog(breedSeleted,subBreedSeleted,state.image,null)
+                                    db!!.addDogs(dog)
                                 }
                             }
                         },
                         {
-                            if (BuildConfig.DEBUG) Toast.makeText(this, "", Toast.LENGTH_LONG).show()
+                            if (BuildConfig.DEBUG) Toast.makeText(this, "Error", Toast.LENGTH_LONG).show()
                         }
                 )
                 .addTo(disposable)
@@ -104,23 +116,48 @@ class MainActivity : BaseActivity<DogViewModel>(DogViewModel::class.java), View.
 
         if (parent.id == com.example.dogsearch.R.id.spinnerBreed) {
             var seletedItem1 = spinnerBreed!!.getItemAtPosition(pos).toString()
-            if (seletedItem1 != defaultString) {
-                setUpSubBreedList(getSubBreedList(seletedItem1))
+            if(!seletedItem1.equals(defaultString)) {
                 breedSeleted = ""
                 subBreedSeleted = ""
                 breedSeleted = seletedItem1
-
+                setUpSubBreedList(getSubBreedList(breedSeleted))
             }
+
         } else if (parent.id == com.example.dogsearch.R.id.spinnerSubBreed) {
             var seletedItem2 = spinnerSubBreed!!.getItemAtPosition(pos).toString()
-            if (seletedItem2 != defaultString) {
                 subBreedSeleted = ""
                 subBreedSeleted = seletedItem2
-            }
         }
     }
-
     override fun onNothingSelected(arg0: AdapterView<*>) {
+
+    }
+
+    override fun onClick(v: View) {
+        when (v.id) {
+            com.example.dogsearch.R.id.Look -> {
+              if(isNetworkAvailable()) {
+                  if (breedSeleted.equals(defaultString) && subBreedSeleted.equals(defaultString)) {
+                      getStateListener()
+                      viewModel.getRandomDog()
+
+                  } else if (!breedSeleted.equals(defaultString) && subBreedSeleted.isBlank()) {
+                      getStateListener()
+                      viewModel.getSearchDog(breedSeleted)
+
+                  } else if (!breedSeleted.equals(defaultString) && subBreedSeleted.isNotBlank()) {
+                      breednSubBreed = breedSeleted + "-" + subBreedSeleted
+                      getStateListener()
+                      viewModel.getSubDogRansom(breednSubBreed)
+                  }
+              } else {
+                  showDogImage(db!!.allDogs.get(47))
+              }
+            }
+            else -> {
+                // else condition
+            }
+        }
     }
 
     fun setUpBreedList(breedObjList: List<Breed>) {
@@ -174,8 +211,12 @@ class MainActivity : BaseActivity<DogViewModel>(DogViewModel::class.java), View.
     }
 
     fun getSubBreedList(breed: String): List<String> {
-        getBreedHashmap(breedList)
-        return breedHashmap.get(breed)!!
+        if(breed.equals(defaultString)){
+            return listOf(defaultString)
+        } else {
+            getBreedHashmap(breedList)
+            return breedHashmap.get(breed)!!
+        }
     }
 
 
@@ -186,112 +227,33 @@ class MainActivity : BaseActivity<DogViewModel>(DogViewModel::class.java), View.
         return breedHashmap
     }
 
-    override fun onClick(v: View) {
-        when (v.id) {
-            com.example.dogsearch.R.id.Look -> {
-                if (breedSeleted != defaultString && subBreedSeleted.isBlank()) {
-                    getStateListener()
-                    viewModel.getSearchDog(breedSeleted)
-                } else if (breedSeleted != defaultString && subBreedSeleted.isNotBlank()){
-                    breednSubBreed = breedSeleted + "-"+ subBreedSeleted
-                    getStateListener()
-                    viewModel.getSubDogRansom(breednSubBreed)
-                    addDog(breedSeleted,subBreedSeleted,imageByteArray)
-                } else {
-                    getStateListener()
-                    viewModel.getRandomDog()
-                }
-            }
-            else -> {
-                // else condition
-            }
-        }
-    }
-
-    fun showDogImage(image: String) {
-        var list = listOf<String>(image)
-        dogAdapterGridView = DogAdapterGridView(this, com.example.dogsearch.R.layout.item_view, list)
+    fun showDogImage(dog:Dog) {
+        var list = listOf<Dog>(dog)
+        dogAdapterGridView = DogAdapterGridView_Dog(this, com.example.dogsearch.R.layout.item_view, list)
         gridView?.setAdapter(dogAdapterGridView)
     }
 
-    fun showDogImageList(images: List<String>) {
-        dogAdapterGridView = DogAdapterGridView(this, com.example.dogsearch.R.layout.item_view, images)
+    fun showDogImageList(dogs: List<Dog>) {
+        dogAdapterGridView = DogAdapterGridView_Dog(this, com.example.dogsearch.R.layout.item_view, dogs)
         gridView?.setAdapter(dogAdapterGridView)
-    }
-
-
-    //COnvert and resize our image to 320dp for faster uploading our images to DB
-    protected fun decodeUri(selectedImage: Uri, REQUIRED_SIZE: Int): Bitmap? {
-
-        try {
-
-            // Decode image size
-            val o = BitmapFactory.Options()
-            o.inJustDecodeBounds = true
-            BitmapFactory.decodeStream(contentResolver.openInputStream(selectedImage), null, o)
-
-            // The new size we want to scale to
-            // final int REQUIRED_SIZE =  size;
-
-            // Find the correct scale value. It should be the power of 2.
-            var width_tmp = o.outWidth
-            var height_tmp = o.outHeight
-            var scale = 1
-            while (true) {
-                if (width_tmp / 2 < REQUIRED_SIZE || height_tmp / 2 < REQUIRED_SIZE) {
-                    break
-                }
-                width_tmp /= 2
-                height_tmp /= 2
-                scale *= 2
-            }
-
-            // Decode with inSampleSize
-            val o2 = BitmapFactory.Options()
-            o2.inSampleSize = scale
-            return BitmapFactory.decodeStream(contentResolver.openInputStream(selectedImage), null, o2)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        return null
-    }
-
-    //Convert imageUrl to bitmap
-    private fun convertImagetoBp(b: String): Bitmap? {
-            try {
-                var url = URL(b);
-                var connection = url.openConnection();
-                connection.setDoInput(true);
-                connection.connect();
-                var input = connection.getInputStream();
-                var myBitmap = BitmapFactory.decodeStream(input);
-                return myBitmap;
-            } catch (e : IOException) {
-                e.printStackTrace();
-                return null;
-            }
     }
 
     //Convert bitmap to bytes
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
-    private fun profileImage(b: Bitmap): ByteArray {
+    fun bitmapToByte(b: Bitmap): ByteArray {
 
         val bos = ByteArrayOutputStream()
-        b.compress(Bitmap.CompressFormat.JPEG, 50, bos)
+        b.compress(Bitmap.CompressFormat.JPEG, 0, bos)
         return bos.toByteArray()
 
     }
 
-    //Insert data to the database
-    private fun addDog(breed: String, subBreed:String, image:ByteArray?) {
-        db!!.addDogs(Dog(breed, subBreed,image))
-        Toast.makeText(applicationContext, "Saved successfully", Toast.LENGTH_LONG).show()
-    }
-
-    //Retrieve data from the database and set to the list view
-    private fun RetrieveRecords() {
-        val dogs = ArrayList(db!!.getAllDogs())
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE)
+        return if (connectivityManager is ConnectivityManager) {
+            val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
+            networkInfo?.isConnected ?: false
+        } else false
     }
 
 }

@@ -1,4 +1,4 @@
-package com.example.dogsearch.view;
+package com.example.dogsearch.view.adapters_notused;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -48,7 +48,6 @@ public class DogAdapterGridView extends android.widget.BaseAdapter {
 
         ImageView imageView;
         TextView textView;
-
 
     }
 

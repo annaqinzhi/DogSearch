@@ -4,8 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="4dp"
-    app:cardElevation="20dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.cardview.widget.CardView
@@ -17,7 +15,9 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@drawable/gradient_bg_cardview"
+            >
 
             <ImageView
                 android:id="@+id/image"
@@ -25,10 +25,10 @@
                 android:layout_height="@dimen/image_height"
                 android:scaleType="centerCrop"
                 android:src="@drawable/dog"
-                android:background="@drawable/gradient_bg_cardview"
                 />
 
             <TextView
+                android:id="@+id/discp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Breed is...."

@@ -1,4 +1,4 @@
-package com.example.dogsearch.view.recyclerviewadapter_notused
+package com.example.dogsearch.view.adapters_notused
 
 import android.view.LayoutInflater
 import android.view.View
