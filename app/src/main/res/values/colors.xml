@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#B2AAA1</color>
+    <color name="colorPrimary">#FFA37A</color>
     <color name="colorOrange">#FFA37A</color>
     <color name="colorGreen">#008577</color>
-    <color name="colorPrimaryDark">#008577</color>
+    <color name="colorPrimaryDark">#9B9A98</color>
     <color name="colorAccent">#D81B60</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
@@ -12,4 +12,5 @@
     <color name="gradientEndColor">#FCEFD7</color>
     <color name="colorGrey1">#9B9A98</color>
     <color name="colorGrey2">#7A7775</color>
+
 </resources>

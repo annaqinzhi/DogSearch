@@ -151,7 +151,7 @@ class MainActivity : BaseActivity<DogViewModel>(DogViewModel::class.java), View.
                       viewModel.getSubDogRansom(breednSubBreed)
                   }
               } else {
-                  showDogImage(db!!.allDogs.get(47))
+                  showDogImage(db!!.allDogs.get((46..70).random()))
               }
             }
             else -> {
