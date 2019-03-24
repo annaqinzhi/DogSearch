@@ -104,7 +104,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public Dog getOneDog(String breed, String subBreed){
-        String selectQuery = "SELECT  * FROM " + TABLE_DOGS;
+        String selectQuery = "SELECT  * FROM " + TABLE_DOGS ;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
