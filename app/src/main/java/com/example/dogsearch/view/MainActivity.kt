@@ -1,12 +1,9 @@
 package com.example.dogsearch.view
 
 
-import android.annotation.TargetApi
 import android.content.Context
-import android.graphics.Bitmap
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
-import android.os.Build
 import android.os.Bundle
 
 import android.view.View
@@ -23,14 +20,12 @@ import io.reactivex.schedulers.Schedulers
 import com.google.gson.GsonBuilder
 import org.json.JSONObject
 import org.json.JSONArray
-import java.io.ByteArrayOutputStream
 import android.widget.AdapterView
 import com.example.dogsearch.model.Dog
 import java.util.*
 
 
-class MainActivity : BaseActivity<DogViewModel>(DogViewModel::class.java), View.OnClickListener,
-        AdapterView.OnItemSelectedListener {
+class MainActivity : BaseActivity<DogViewModel>(DogViewModel::class.java), View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     private var gridView: GridView? = null
     private var spinnerBreed: Spinner? = null
@@ -67,8 +62,8 @@ class MainActivity : BaseActivity<DogViewModel>(DogViewModel::class.java), View.
             viewModel.getBreedListAll()
             viewModel.getRandomDog()
         } else {
-            showDogImage(db!!.allDogs.get(48))
-            Toast.makeText(this, db!!.allDogs.get(48).breed, Toast.LENGTH_LONG).show()
+            var size = db!!.allDogs.size - 1
+            showDogImage(db!!.allDogs.get((0..size).random()))
         }
     }
 
@@ -151,7 +146,8 @@ class MainActivity : BaseActivity<DogViewModel>(DogViewModel::class.java), View.
                       viewModel.getSubDogRansom(breednSubBreed)
                   }
               } else {
-                  showDogImage(db!!.allDogs.get((46..70).random()))
+                  var size = db!!.allDogs.size - 1
+                  showDogImage(db!!.allDogs.get((0..size).random()))
               }
             }
             else -> {
@@ -236,16 +232,6 @@ class MainActivity : BaseActivity<DogViewModel>(DogViewModel::class.java), View.
     fun showDogImageList(dogs: List<Dog>) {
         dogAdapterGridView = DogAdapterGridView_Dog(this, com.example.dogsearch.R.layout.item_view, dogs)
         gridView?.setAdapter(dogAdapterGridView)
-    }
-
-    //Convert bitmap to bytes
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
-    fun bitmapToByte(b: Bitmap): ByteArray {
-
-        val bos = ByteArrayOutputStream()
-        b.compress(Bitmap.CompressFormat.JPEG, 0, bos)
-        return bos.toByteArray()
-
     }
 
     private fun isNetworkAvailable(): Boolean {

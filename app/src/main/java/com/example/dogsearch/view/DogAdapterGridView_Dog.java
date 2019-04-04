@@ -102,16 +102,6 @@ public class DogAdapterGridView_Dog extends android.widget.BaseAdapter {
         return BitmapFactory.decodeByteArray(bitmap,0, bitmap.length);
     }
 
-
-    //Convert bitmap to bytes
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
-    private byte[] bitmapToByte(Bitmap b){
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        b.compress(Bitmap.CompressFormat.PNG, 0, bos);
-        return bos.toByteArray();
-    }
-
     private boolean isNetworkAvailable() {
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

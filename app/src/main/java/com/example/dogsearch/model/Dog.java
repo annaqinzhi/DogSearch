@@ -2,13 +2,11 @@ package com.example.dogsearch.model;
 
 public class Dog {
 
-    //private variables
-    String breed;
-    String subBreed;
-    byte[] img;
-    String imgLink;
+    private String breed;
+    private String subBreed;
+    private byte[] img;
+    private String imgLink;
 
-    // Empty constructor
     public Dog(){
 
     }
@@ -52,4 +50,5 @@ public class Dog {
         this.imgLink = imgLink;
     }
 }
+
 
